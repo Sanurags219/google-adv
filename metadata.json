@@ -1,0 +1,6 @@
+{
+  "name": "CampaignFlow",
+  "description": "AI-powered email marketing campaign generator that creates subject lines, copy, and visuals from a single prompt.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["AI Content Generation", "Image Generation"]
+}
