@@ -6,6 +6,7 @@ import { Sparkles, Send, Image as ImageIcon, Loader2, Copy, Check, RotateCcw, Pa
 import { ai, MODELS } from '@/lib/gemini';
 import { CampaignData, campaignSchema } from '@/lib/types';
 import ReactMarkdown from 'react-markdown';
+import Image from 'next/image';
 
 export default function CampaignGenerator() {
   const [prompt, setPrompt] = useState('');
@@ -118,6 +119,9 @@ export default function CampaignGenerator() {
                 <option>Minimalist & Luxury</option>
                 <option>Urgent & Bold</option>
                 <option>Playful & Friendly</option>
+                <option>Authoritative</option>
+                <option>Empathetic</option>
+                <option>Humorous</option>
               </select>
             </div>
             <div>
@@ -183,7 +187,7 @@ export default function CampaignGenerator() {
                             i === 0 ? 'border-indigo-500 bg-slate-50' : 'border-slate-200 bg-white hover:bg-slate-50'
                           }`}
                         >
-                          <span className="text-slate-700">"{line}"</span>
+                          <span className="text-slate-700">&quot;{line}&quot;</span>
                           <div className="flex items-center gap-3">
                             <span className={`text-[10px] font-bold ${i === 0 ? 'text-indigo-600' : 'text-slate-400'}`}>
                               {i === 0 ? '98%' : 90 - i * 5 + '%'} Fit
@@ -200,13 +204,20 @@ export default function CampaignGenerator() {
                     <label className="block text-[10px] font-bold text-slate-400 uppercase mb-4 tracking-widest">Hero Image Concept</label>
                     <div className="relative aspect-video bg-indigo-50 rounded-lg flex flex-col items-center justify-center text-indigo-400 border border-indigo-200 border-dashed overflow-hidden">
                       {generatedImageUrl ? (
-                        <motion.img
+                        <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          src={generatedImageUrl}
-                          alt="Campaign Visual"
-                          className="w-full h-full object-cover"
-                        />
+                          className="w-full h-full"
+                        >
+                          <Image
+                            src={generatedImageUrl}
+                            alt="Campaign Visual"
+                            fill
+                            className="object-cover"
+                            unoptimized
+                            referrerPolicy="no-referrer"
+                          />
+                        </motion.div>
                       ) : (
                         <>
                           <Loader2 className="w-8 h-8 animate-spin mb-2" />
@@ -249,8 +260,15 @@ export default function CampaignGenerator() {
                     </div>
                     
                     {generatedImageUrl && (
-                      <div className="w-full h-48 bg-slate-100 rounded-lg mb-8 overflow-hidden">
-                        <img src={generatedImageUrl} className="w-full h-full object-cover" alt="Email Hero" />
+                      <div className="w-full h-48 bg-slate-100 rounded-lg mb-8 overflow-hidden relative">
+                        <Image 
+                          src={generatedImageUrl} 
+                          fill 
+                          className="object-cover" 
+                          alt="Email Hero" 
+                          unoptimized
+                          referrerPolicy="no-referrer"
+                        />
                       </div>
                     )}
 
