@@ -12,6 +12,8 @@ export default function CampaignGenerator() {
   const [prompt, setPrompt] = useState('');
   const [tone, setTone] = useState('Professional');
   const [audience, setAudience] = useState('Existing Customers');
+  const [visualStyle, setVisualStyle] = useState('Photorealistic');
+  const [aspectRatio, setAspectRatio] = useState('16:9');
   const [isGenerating, setIsGenerating] = useState(false);
   const [campaign, setCampaign] = useState<CampaignData | null>(null);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
@@ -30,11 +32,13 @@ export default function CampaignGenerator() {
         model: MODELS.TEXT,
         contents: `Create a complete email marketing campaign for: ${prompt}. 
         Audience: ${audience}. 
-        Tone: ${tone}.`,
+        Tone: ${tone}.
+        Visual Style Preference: ${visualStyle}.`,
         config: {
           responseMimeType: "application/json",
           responseSchema: campaignSchema,
-          systemInstruction: "You are an expert marketing strategist and world-class copywriter. Generate high-converting email content based on user prompts. For the imagePrompt, provide a highly detailed, descriptive prompt (style, lighting, composition) suitable for a professional marketing visual. Use keywords like 'photorealistic', 'high-end photography', or 'clean minimalist illustration' as appropriate.",
+          systemInstruction: `You are an expert marketing strategist and world-class copywriter. Generate high-converting email content based on user prompts. 
+          For the imagePrompt, provide a highly detailed, descriptive prompt (lighting, composition) in a ${visualStyle} style suitable for a professional marketing visual.`,
         },
       });
 
@@ -44,10 +48,10 @@ export default function CampaignGenerator() {
       // 2. Generate Image
       const imageResponse = await ai.models.generateContent({
         model: MODELS.IMAGE,
-        contents: data.imagePrompt,
+        contents: `${data.imagePrompt}. Style: ${visualStyle}.`,
         config: {
           imageConfig: {
-            aspectRatio: "16:9",
+            aspectRatio: aspectRatio as any,
           },
         },
       });
@@ -137,6 +141,34 @@ export default function CampaignGenerator() {
                 <option>Investors</option>
               </select>
             </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Visual Style</label>
+              <select
+                value={visualStyle}
+                onChange={(e) => setVisualStyle(e.target.value)}
+                className="w-full p-2.5 text-sm border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer"
+              >
+                <option>Photorealistic</option>
+                <option>3D Render</option>
+                <option>Minimalist Illustration</option>
+                <option>Abstract Art</option>
+                <option>Retro/Vintage</option>
+                <option>Sketch/Handmade</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Aspect Ratio</label>
+              <select
+                value={aspectRatio}
+                onChange={(e) => setAspectRatio(e.target.value)}
+                className="w-full p-2.5 text-sm border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer"
+              >
+                <option value="16:9">Wide (16:9)</option>
+                <option value="4:3">Standard (4:3)</option>
+                <option value="1:1">Square (1:1)</option>
+                <option value="9:16">Portrait (9:16)</option>
+              </select>
+            </div>
           </div>
 
           <button
@@ -202,7 +234,8 @@ export default function CampaignGenerator() {
                   {/* Visual Concept */}
                   <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                     <label className="block text-[10px] font-bold text-slate-400 uppercase mb-4 tracking-widest">Hero Image Concept</label>
-                    <div className="relative aspect-video bg-indigo-50 rounded-lg flex flex-col items-center justify-center text-indigo-400 border border-indigo-200 border-dashed overflow-hidden">
+                    <div className="relative bg-indigo-50 rounded-lg flex flex-col items-center justify-center text-indigo-400 border border-indigo-200 border-dashed overflow-hidden" 
+                         style={{ aspectRatio: aspectRatio.replace(':', '/') }}>
                       {generatedImageUrl ? (
                         <motion.div
                           initial={{ opacity: 0 }}
@@ -260,7 +293,8 @@ export default function CampaignGenerator() {
                     </div>
                     
                     {generatedImageUrl && (
-                      <div className="w-full h-48 bg-slate-100 rounded-lg mb-8 overflow-hidden relative">
+                      <div className="w-full bg-slate-100 rounded-lg mb-8 overflow-hidden relative" 
+                           style={{ aspectRatio: aspectRatio.replace(':', '/') }}>
                         <Image 
                           src={generatedImageUrl} 
                           fill 
